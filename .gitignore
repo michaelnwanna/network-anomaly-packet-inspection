@@ -1,0 +1,10 @@
+/bin/
+/data/
+*.db
+*.db-shm
+*.db-wal
+*.db.lock
+*.key
+traceglass-ca.crt
+coverage.out
+.DS_Store

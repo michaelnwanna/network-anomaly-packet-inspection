@@ -1,0 +1,15 @@
+{
+  "tracking_domains": [
+    "doubleclick.net",
+    "google-analytics.com",
+    "googletagmanager.com",
+    "facebook.net",
+    "app-measurement.com",
+    "segment.io",
+    "mixpanel.com",
+    "amplitude.com",
+    "hotjar.com"
+  ],
+  "allowed_ports": [80, 443],
+  "large_payload_bytes": 1048576
+}

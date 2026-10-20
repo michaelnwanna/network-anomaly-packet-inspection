@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Traceglass - Local Network Observatory</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <aside>
+    <a class="brand" href="/"><span class="brand-icon">T</span>traceglass<span class="brand-dot">.</span></a>
+    <div class="workspace">PERSONAL WORKSPACE</div>
+    <nav aria-label="Main navigation"><a class="selected" href="/">Network overview <span>01</span></a></nav>
+    <div class="aside-note"><span class="dot"></span> Local by design<p>No cloud. No analytics.<br>Your traffic stays yours.</p></div>
+  </aside>
+  <main>
+    <header><span>WORKSPACE / <strong>NETWORK OVERVIEW</strong></span><span id="connection" class="connection">Connecting</span></header>
+    <section class="heading">
+      <div><div class="eyebrow">YOUR NETWORK, UNDER THE LENS</div><h1>See what leaves<br>your device.</h1><p>A local-first observatory for outbound traffic and telemetry signals.</p></div>
+      <div class="session-card"><span class="dot"></span> LIVE SESSION<dl><dt>Proxy listener</dt><dd id="proxy">--</dd><dt>Storage</dt><dd>SQLite / WAL</dd><dt>Inspection</dt><dd id="inspection">--</dd></dl></div>
+    </section>
+    <div id="error" class="error" role="alert" hidden></div>
+    <section class="metrics" aria-label="Traffic statistics">
+      <article><div>RETAINED FLOWS <span>01</span></div><strong id="records">0</strong><p>Completed exchanges &amp; tunnels</p></article>
+      <article><div>FLAGGED SIGNALS <span>02</span></div><strong id="flagged" class="amber">0</strong><p>Rule matches, not verdicts</p></article>
+      <article><div>TRANSFER VOLUME <span>03</span></div><strong id="volume">0 B</strong><p>Observed upload + download</p></article>
+      <article><div>ACTIVE EXCHANGES <span>04</span></div><strong id="active">0</strong><p id="queue">0 queued / 0 dropped</p></article>
+    </section>
+    <section class="traffic">
+      <div class="section-title"><div><span class="eyebrow">TRAFFIC EXPLORER</span><h2>Outbound activity <span id="live-label">LIVE</span></h2></div><button id="pause" type="button">Pause updates</button></div>
+      <form id="filters"><label class="search"><span>Filter destination</span><input id="host" type="search" placeholder="Search a hostname..." maxlength="253" autocomplete="off"></label><label class="checkbox"><input id="flagged-only" type="checkbox"> Flagged only</label><button type="submit">Apply filter</button></form>
+      <div class="table-wrap"><table><thead><tr><th>TIME / METHOD</th><th>DESTINATION</th><th>VISIBILITY</th><th>TRANSFER</th><th>STATUS</th><th>SIGNALS</th></tr></thead><tbody id="flows"></tbody></table></div>
+      <div class="table-footer"><span id="table-note">Waiting for completed traffic</span><div><button id="latest" type="button" hidden>Back to latest</button><button id="older" type="button" disabled>Older activity</button></div></div>
+    </section>
+    <section class="privacy"><div class="privacy-icon">+</div><div><h3>Metadata, not your messages.</h3><p>Bodies, headers, credentials, URL paths, and query strings are never persisted. HTTPS inspection is opt-in by domain. Encrypted tunnels expose destination and byte counts only.</p></div><span>LOCAL FIRST</span></section>
+    <footer><span>TRACEGLASS / NETWORK OBSERVATORY</span><span id="retention">Bounded storage. Deliberate visibility.</span></footer>
+  </main>
+</body>
+</html>
