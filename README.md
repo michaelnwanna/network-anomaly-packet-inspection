@@ -44,6 +44,10 @@ This is an **explicit application-layer proxy**, not a transparent system-wide i
 
 ## Quick start
 
+New to proxies? Start with the [illustrated first-run walkthrough](docs/USAGE.md).
+It includes [browser setup](docs/USAGE.md#use-a-browser) and a cleanup checklist.
+If something does not work, see [troubleshooting](docs/TROUBLESHOOTING.md).
+
 Requires Go 1.24+ (a current supported Go release is recommended); no Node, frontend build, C compiler, or external database server is required.
 
 ```sh

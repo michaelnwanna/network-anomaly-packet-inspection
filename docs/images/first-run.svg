@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="280" viewBox="0 0 960 280" role="img" aria-labelledby="title desc">
+  <title id="title">Traceglass first-run traffic path</title>
+  <desc id="desc">An explicitly configured browser or curl sends traffic through the loopback proxy to the destination. The proxy queues metadata for SQLite. A separate local dashboard reads that metadata. HTTPS is tunneled by default.</desc>
+  <rect width="960" height="280" rx="16" fill="#101821"/>
+  <g font-family="sans-serif" text-anchor="middle" fill="#edf4fa">
+    <text x="480" y="32" font-size="18" font-weight="bold">Configure a client, make a request, see a completed flow</text>
+    <g fill="#1c2c3a" stroke="#73cbb5" stroke-width="2">
+      <rect x="30" y="65" width="235" height="80" rx="10"/>
+      <rect x="355" y="65" width="250" height="80" rx="10"/>
+      <rect x="695" y="65" width="235" height="80" rx="10"/>
+      <rect x="355" y="195" width="250" height="60" rx="10"/>
+      <rect x="695" y="195" width="235" height="60" rx="10"/>
+    </g>
+    <g font-size="17">
+      <text x="147" y="97">Test browser / curl</text>
+      <text x="480" y="97">Traceglass proxy</text>
+      <text x="812" y="97">example.com</text>
+      <text x="480" y="231">SQLite metadata</text>
+      <text x="812" y="220">Local dashboard</text>
+    </g>
+    <g font-size="13" fill="#bdcddc">
+      <text x="147" y="122">Explicit proxy configuration</text>
+      <text x="480" y="122">127.0.0.1:8080</text>
+      <text x="812" y="122">HTTPS tunneled by default</text>
+      <text x="812" y="241">127.0.0.1:9090</text>
+      <text x="480" y="177">Bounded queue / no saved payloads</text>
+    </g>
+  </g>
+  <g fill="none" stroke="#73cbb5" stroke-width="2">
+    <path d="M275 105h65m-9-6 9 6-9 6"/>
+    <path d="M615 105h65m-9-6 9 6-9 6"/>
+    <path d="M480 149v11m0 20v10m-6-9 6 9 6-9"/>
+    <path d="M615 225h65m-9-6 9 6-9 6"/>
+  </g>
+</svg>
