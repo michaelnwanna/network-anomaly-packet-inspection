@@ -1,0 +1,33 @@
+{
+  "rules": {
+    "tracking_domains": ["tracker.test"],
+    "allowed_ports": [80, 443],
+    "large_payload_bytes": 100
+  },
+  "classifications": [
+    {"name": "no-matches", "host": "example.test", "port": 443, "sent": 0, "received": 0, "flags": []},
+    {"name": "apex-tracker", "host": "tracker.test", "port": 443, "sent": 0, "received": 0, "flags": ["known-tracker"]},
+    {"name": "subdomain-case-root-dot", "host": "Sub.TRACKER.test.", "port": 443, "sent": 0, "received": 0, "flags": ["known-tracker"]},
+    {"name": "suffix-not-boundary", "host": "eviltracker.test", "port": 443, "sent": 0, "received": 0, "flags": []},
+    {"name": "tracker-not-prefix", "host": "tracker.test.example", "port": 443, "sent": 0, "received": 0, "flags": []},
+    {"name": "exact-payload-boundary", "host": "example.test", "port": 80, "sent": 60, "received": 40, "flags": []},
+    {"name": "aggregate-payload-over-boundary", "host": "example.test", "port": 80, "sent": 60, "received": 41, "flags": ["large-payload"]},
+    {"name": "upload-alone", "host": "example.test", "port": 443, "sent": 101, "received": 0, "flags": ["large-payload"]},
+    {"name": "download-alone", "host": "example.test", "port": 443, "sent": 0, "received": 101, "flags": ["large-payload"]},
+    {"name": "port-signal", "host": "example.test", "port": 8443, "sent": 0, "received": 0, "flags": ["unsanctioned-port"]},
+    {"name": "combined-stable-order", "host": "tracker.test", "port": 8443, "sent": 60, "received": 41, "flags": ["known-tracker", "large-payload", "unsanctioned-port"]},
+    {"name": "no-signed-sum-overflow", "host": "example.test", "port": 443, "sent": 9223372036854775807, "received": 1, "flags": ["large-payload"]}
+  ],
+  "inspection_scope": "example.com,*.tracker.test,127.0.0.1,::1",
+  "inspection_matches": [
+    {"host": "EXAMPLE.COM.", "matches": true},
+    {"host": "sub.example.com", "matches": false},
+    {"host": "a.tracker.test", "matches": true},
+    {"host": "a.b.tracker.test", "matches": true},
+    {"host": "tracker.test", "matches": false},
+    {"host": "eviltracker.test", "matches": false},
+    {"host": "127.0.0.1", "matches": true},
+    {"host": "::1", "matches": true}
+  ],
+  "invalid_scopes": ["*", "https://example.com", "example.com:443", "a..b", "*.127.0.0.1", ",", "-bad.test"]
+}

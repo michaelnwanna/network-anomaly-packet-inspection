@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"io"
@@ -26,12 +27,13 @@ type Sink interface {
 }
 
 type Options struct {
-	Scope        classify.Scope
-	CA           *authority.Authority
-	Classifier   *classify.Engine
-	Store        Sink
-	AllowPrivate bool
-	MaxActive    int
+	Scope         classify.Scope
+	CA            *authority.Authority
+	Classifier    *classify.Engine
+	Store         Sink
+	AllowPrivate  bool
+	MaxActive     int
+	UpstreamRoots *x509.CertPool
 }
 
 type Proxy struct {
@@ -56,7 +58,7 @@ func New(opts Options) (*Proxy, error) {
 	p := &Proxy{opts: opts, slots: make(chan struct{}, opts.MaxActive), conns: make(map[net.Conn]struct{})}
 	p.transport = &http.Transport{
 		Proxy: nil, DialContext: p.dial,
-		TLSClientConfig:   &tls.Config{MinVersion: tls.VersionTLS12},
+		TLSClientConfig:   &tls.Config{MinVersion: tls.VersionTLS12, RootCAs: opts.UpstreamRoots},
 		ForceAttemptHTTP2: true, MaxIdleConns: 128, MaxIdleConnsPerHost: 8,
 		MaxConnsPerHost: opts.MaxActive, IdleConnTimeout: 90 * time.Second,
 		TLSHandshakeTimeout: 10 * time.Second, ResponseHeaderTimeout: 20 * time.Second,

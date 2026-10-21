@@ -1,0 +1,27 @@
+name: CPlusPlus CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: true
+      - name: Native dependencies
+        run: sudo apt-get update && sudo apt-get install -y libboost-dev libssl-dev libsqlite3-dev nlohmann-json3-dev
+      - run: cmake -S implementations/cpp -B implementations/cpp/build -DCMAKE_BUILD_TYPE=Release
+      - run: cmake --build implementations/cpp/build --parallel 2
+      - run: ctest --test-dir implementations/cpp/build --output-on-failure
+      - name: Executable conformance
+        run: |
+          export TRACEGLASS_CONFORMANCE_COMMAND="[\"$GITHUB_WORKSPACE/implementations/cpp/build/traceglass\"]"
+          go test -race ./conformance -count=1 -v -timeout=180s

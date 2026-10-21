@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/rand"
+	"crypto/x509"
 	"encoding/hex"
 	"errors"
 	"flag"
@@ -103,6 +104,7 @@ func serve(ctx context.Context, args []string, out, errOut io.Writer) (result er
 	dir := flags.String("data-dir", "./data", "dedicated directory for CA and SQLite files")
 	inspect := flags.String("inspect", "", "comma-separated exact hosts or *.domain patterns to inspect")
 	rulesFile := flags.String("rules", "", "custom classifier rules JSON (replaces defaults)")
+	upstreamCA := flags.String("upstream-ca", "", "additional trusted upstream CA certificates in PEM format")
 	maxRecords := flags.Int64("max-records", 1_000_000, "maximum retained metadata records")
 	maxAge := flags.Duration("max-age", 7*24*time.Hour, "maximum record age")
 	queueSize := flags.Int("queue-size", 8192, "bounded metadata queue capacity")
@@ -149,6 +151,20 @@ func serve(ctx context.Context, args []string, out, errOut io.Writer) (result er
 	if err != nil {
 		return err
 	}
+	var upstreamRoots *x509.CertPool
+	if *upstreamCA != "" {
+		pemData, err := os.ReadFile(*upstreamCA)
+		if err != nil {
+			return fmt.Errorf("read upstream CA: %w", err)
+		}
+		upstreamRoots, err = x509.SystemCertPool()
+		if err != nil {
+			return fmt.Errorf("load system upstream trust: %w", err)
+		}
+		if !upstreamRoots.AppendCertsFromPEM(pemData) {
+			return errors.New("upstream CA file contains no valid certificates")
+		}
+	}
 	db, err := store.Open(filepath.Join(*dir, "metadata.db"), store.Options{
 		MaxRecords: *maxRecords, MaxAge: *maxAge, QueueSize: *queueSize,
 	})
@@ -157,7 +173,7 @@ func serve(ctx context.Context, args []string, out, errOut io.Writer) (result er
 	}
 	defer func() { result = errors.Join(result, db.Close()) }()
 	p, err := proxy.New(proxy.Options{Scope: scope, CA: ca, Classifier: engine,
-		Store: db, AllowPrivate: *allowPrivate, MaxActive: *maxActive})
+		Store: db, AllowPrivate: *allowPrivate, MaxActive: *maxActive, UpstreamRoots: upstreamRoots})
 	if err != nil {
 		return err
 	}

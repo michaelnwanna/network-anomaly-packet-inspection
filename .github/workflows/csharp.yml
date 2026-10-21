@@ -1,0 +1,28 @@
+name: CSharp CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: true
+      - run: dotnet restore implementations/csharp/Traceglass.sln --locked-mode
+      - run: dotnet build implementations/csharp/Traceglass.sln -c Release --no-restore
+      - run: dotnet test implementations/csharp/Traceglass.sln -c Release --no-build --no-restore
+      - name: Executable conformance
+        run: |
+          export TRACEGLASS_CONFORMANCE_COMMAND="[\"dotnet\",\"$GITHUB_WORKSPACE/implementations/csharp/src/Traceglass/bin/Release/net10.0/traceglass-csharp.dll\"]"
+          go test -race ./conformance -count=1 -v -timeout=180s

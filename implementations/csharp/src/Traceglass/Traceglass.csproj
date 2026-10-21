@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <AssemblyName>traceglass-csharp</AssemblyName>
+    <RootNamespace>Traceglass</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.13" />
+    <EmbeddedResource Include="../../../../internal/classify/defaults.json" LogicalName="Traceglass.defaults.json" />
+    <EmbeddedResource Include="../../../../internal/dashboard/web/index.html" LogicalName="Traceglass.web.index.html" />
+    <EmbeddedResource Include="../../../../internal/dashboard/web/app.js" LogicalName="Traceglass.web.app.js" />
+    <EmbeddedResource Include="../../../../internal/dashboard/web/style.css" LogicalName="Traceglass.web.style.css" />
+    <InternalsVisibleTo Include="Traceglass.Tests" />
+  </ItemGroup>
+</Project>

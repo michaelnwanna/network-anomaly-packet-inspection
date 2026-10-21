@@ -8,6 +8,11 @@
 
 A local-first HTTP/HTTPS inspection proxy and network anomaly observatory, built in Go. Traceglass helps you investigate outgoing telemetry without sending traffic history to a cloud service.
 
+**Go is the primary implementation.** Native [C#](implementations/csharp/),
+[C++](implementations/cpp/), and [Rust](implementations/rust/) implementations
+live alongside it, with their own builds, tests, and CI. See
+[compatibility and runtime differences](docs/IMPLEMENTATIONS.md).
+
 **Opt-in HTTPS interception. Streaming I/O. Bounded queues. SQLite WAL. No persisted payloads.**
 
 > Use only on devices and traffic you own or have explicit permission to inspect. HTTPS inspection creates a powerful trust credential; read [the threat model](docs/THREAT-MODEL.md) before enabling it.
@@ -148,6 +153,11 @@ Unknown fields, invalid ports/domains, multiple JSON values, non-positive thresh
 
 Use `serve -h` for all flags. Both listeners require a loopback IP literal, including `[::1]` for IPv6. Port `0` selects an available ephemeral port. Only one process can write a given database.
 
+For controlled upstream fixtures or private PKI, `-upstream-ca FILE` adds PEM
+certificates to the upstream trust roots. Certificate-chain and hostname
+verification remain enabled; this is not a TLS verification bypass. This file
+is separate from the local inspection CA trusted by your test client.
+
 Private, loopback, and link-local destinations are denied by default; DNS answers are validated before dialing an IP literal. For an authorized local test server, opt in with `-allow-private`. This broadens access to local services and metadata endpoints; never use it with untrusted clients.
 
 **Resource limits and failure behavior:**
@@ -224,6 +234,13 @@ Tests cover dynamic certificate verification, allowlist boundaries, HTTP forward
 
 GitHub Actions runs formatting checks, `go vet`, race-enabled tests, and a CGO-free Linux build on Go 1.24.x and the current stable Go release. No certificate trust changes or external network fixtures are needed by tests.
 
+Separate [C#](.github/workflows/csharp.yml), [C++](.github/workflows/cpp.yml),
+and [Rust](.github/workflows/rust.yml) workflows build and test each native
+implementation. All four run the same executable conformance suite against
+local HTTP/TLS fixtures. Native runtimes embed the canonical dashboard and
+classifier defaults rather than maintaining divergent copies. See
+[implementation verification](docs/IMPLEMENTATIONS.md#reproducible-verification).
+
 ## Project layout
 
 ```text
@@ -234,6 +251,9 @@ internal/proxy/      Streaming HTTP forwarding, CONNECT, selective MITM
 internal/store/      Bounded writer, SQLite metadata, retention and queries
 internal/dashboard/ Read-only API and embedded HTML/CSS/JavaScript
 docs/                Threat model and API contract
+conformance/         Shared black-box executable contract tests
+testdata/conformance/ Classification and inspection-scope vectors
+implementations/     Native C#, C++, and Rust implementations (Go stays primary)
 ```
 
 ## Author

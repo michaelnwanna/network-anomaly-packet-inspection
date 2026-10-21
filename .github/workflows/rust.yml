@@ -1,0 +1,29 @@
+name: Rust CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: true
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - run: cargo fmt --manifest-path implementations/rust/Cargo.toml --check
+      - run: cargo test --locked --manifest-path implementations/rust/Cargo.toml
+      - run: cargo clippy --locked --manifest-path implementations/rust/Cargo.toml --all-targets -- -D warnings
+      - run: cargo build --locked --release --manifest-path implementations/rust/Cargo.toml
+      - name: Executable conformance
+        run: |
+          export TRACEGLASS_CONFORMANCE_COMMAND="[\"$GITHUB_WORKSPACE/implementations/rust/target/release/traceglass-rust\"]"
+          go test -race ./conformance -count=1 -v -timeout=180s

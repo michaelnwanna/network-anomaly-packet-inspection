@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -64,6 +65,20 @@ func TestCommands(t *testing.T) {
 	}
 	if err := run(context.Background(), []string{"ca", "init", "-data-dir", dir}, io.Discard, io.Discard); err == nil {
 		t.Fatal("CA was overwritten")
+	}
+}
+
+func TestInvalidUpstreamTrust(t *testing.T) {
+	dir := t.TempDir()
+	malformed := filepath.Join(dir, "invalid.pem")
+	if err := os.WriteFile(malformed, []byte("not a certificate"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range []string{filepath.Join(dir, "missing.pem"), malformed} {
+		err := run(context.Background(), []string{"serve", "-data-dir", dir, "-upstream-ca", path}, io.Discard, io.Discard)
+		if err == nil || !strings.Contains(err.Error(), "upstream CA") {
+			t.Fatalf("invalid upstream trust did not fail explicitly: %v", err)
+		}
 	}
 }
 
